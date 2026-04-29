@@ -1,6 +1,6 @@
 -- defining windows dimensions
-local WINDOW_WIDTH = 1280
-local WINDOW_HEIGHT = 720
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
 
 VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
@@ -46,6 +46,9 @@ function love.load()
     love.window.setTitle('Flappy Bird')
 
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, { upscale = 'normal' })
+
+    -- adding a table to store keyboard memory 
+    love.keyboard.keysPressed = {}
 end
 
 
@@ -55,15 +58,32 @@ end
 
 
 function love.keypressed(key)
+    love.keyboard.keysPressed[key] = true
+
     if key == 'q' or key == 'escape' then
         love.event.quit()
     end
 end
 
 
+function love.keyboard.wasPressed(key)
+    if love.keyboard.keysPressed[key] then
+        return true
+    else
+        return false
+    end
+end
+
+
 function love.update(dt)
+    -- scrolling the background 
     backgroundScroll = (backgroundScroll + (BACKGROUND_SCROLL_SPEED * dt)) % BACKGROUND_LOOPING_POINT
     groundScroll = (groundScroll + (GROUND_SCROLL_SPEED * dt)) % VIRTUAL_WIDTH
+
+    bird:update(dt)
+
+    -- resetting keyboard memory
+    love.keyboard.keysPressed = {}
 end
 
 
