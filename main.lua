@@ -2,12 +2,24 @@
 local WINDOW_WIDTH = 1280
 local WINDOW_HEIGHT = 720
 
-local VIRTUAL_WIDTH = 512
-local VIRTUAL_HEIGHT = 288
+VIRTUAL_WIDTH = 512
+VIRTUAL_HEIGHT = 288
+
+-- defining background scrollings
+local backgroundScroll = 0
+local groundScroll = 0
+
+local BACKGROUND_SCROLL_SPEED = 30
+local GROUND_SCROLL_SPEED = 60
+
+local BACKGROUND_LOOPING_POINT = 413
 
 -- importing external libraries
 push = require('Libraries/push')
 Class = require('Libraries/class')
+
+-- importing objects
+require('Objects/Bird')
 
 
 function love.load()
@@ -17,6 +29,9 @@ function love.load()
     -- setting images 
     background = love.graphics.newImage('Images/background.png')
     ground = love.graphics.newImage('Images/ground.png')
+
+    -- setting Bird
+    bird = Bird()
 
     -- setting window 
     love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, 
@@ -46,12 +61,21 @@ function love.keypressed(key)
 end
 
 
+function love.update(dt)
+    backgroundScroll = (backgroundScroll + (BACKGROUND_SCROLL_SPEED * dt)) % BACKGROUND_LOOPING_POINT
+    groundScroll = (groundScroll + (GROUND_SCROLL_SPEED * dt)) % VIRTUAL_WIDTH
+end
+
+
 function love.draw()
     push:start()
 
     -- drawing backgrounds 
-    love.graphics.draw(background, 0, 0)
-    love.graphics.draw(ground, 0, VIRTUAL_HEIGHT - 16)    
+    love.graphics.draw(background, -backgroundScroll, 0)
+    love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - 16)  
+    
+    -- drawing bird 
+    bird:render()
 
     push:finish()
 end
